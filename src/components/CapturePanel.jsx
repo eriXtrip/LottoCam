@@ -130,15 +130,22 @@ export default function CapturePanel({ disabled, onImage, preview }) {
 
   function pickFile(event) {
     const file = event.target.files?.[0]
-    if (file) onImage(file)
+    if (file) {
+      if (streaming) stopCamera()
+      onImage(file)
+    }
     event.target.value = ''
   }
 
   function handleDrop(event) {
     event.preventDefault()
     setDragging(false)
+    if (disabled) return
     const file = event.dataTransfer.files?.[0]
-    if (file && file.type.startsWith('image/')) onImage(file)
+    if (file && file.type.startsWith('image/')) {
+      if (streaming) stopCamera()
+      onImage(file)
+    }
   }
 
   return (
@@ -193,9 +200,6 @@ export default function CapturePanel({ disabled, onImage, preview }) {
             {starting ? 'Opening camera…' : 'Start camera'}
           </button>
         )}
-        <button type="button" className="btn btn--ghost" onClick={() => fileRef.current?.click()} disabled={disabled}>
-          Choose a photo
-        </button>
         <input
           ref={fileRef}
           type="file"
@@ -206,21 +210,28 @@ export default function CapturePanel({ disabled, onImage, preview }) {
         />
       </div>
 
-      <div
+      <button
+        type="button"
         className={dragging ? 'capture-drop is-dragging' : 'capture-drop'}
+        onClick={() => {
+          if (!disabled) fileRef.current?.click()
+        }}
         onDragOver={(event) => {
           event.preventDefault()
-          setDragging(true)
+          if (!disabled) setDragging(true)
         }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
+        disabled={disabled}
       >
-        <span className="capture-drop__label">Or drop a photo here</span>
+        <span className="capture-drop__label">
+          <span className="capture-drop__action">Choose a photo</span> or drop it here
+        </span>
         <span className="capture-drop__hint">
           Use a bright, straight-on shot. Only the printed combination and draw date need to be
           legible.
         </span>
-      </div>
+      </button>
 
       {error ? (
         <div className="status status--error" role="alert">

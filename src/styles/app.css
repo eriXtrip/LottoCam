@@ -446,7 +446,13 @@ select {
   place-items: center;
 }
 
-.capture-stage video,
+.capture-stage video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .capture-stage img {
   width: 100%;
   height: 100%;
@@ -459,6 +465,7 @@ select {
   font-size: 0.9rem;
   text-align: center;
   padding: var(--s-4);
+  line-height: 1.45;
 }
 
 .capture-actions {
@@ -469,25 +476,67 @@ select {
 }
 
 .capture-drop {
+  width: 100%;
   margin-top: var(--s-4);
-  border: 1px dashed var(--line-strong);
+  border: 1.5px dashed var(--line-strong);
   border-radius: var(--r-sm);
   padding: var(--s-4);
   display: grid;
   gap: var(--s-2);
   justify-items: start;
+  text-align: left;
   background: var(--white);
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.capture-drop:hover:not(:disabled) {
+  border-color: var(--royal-blue);
+  background: var(--royal-blue-wash);
+}
+
+.capture-drop:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-color: var(--royal-blue);
+}
+
+.capture-drop.is-dragging {
+  border-style: solid;
+  border-color: var(--royal-blue);
+  background: var(--royal-blue-wash);
+}
+
+.capture-drop:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .capture-drop__label {
   font-weight: 600;
   color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.capture-drop__action {
+  color: var(--royal-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.capture-drop:hover:not(:disabled) .capture-drop__action {
+  color: var(--royal-blue-hover);
 }
 
 .capture-drop__hint {
   color: var(--ink-soft);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
 }
 
 /* Fields ******************************************************************/
@@ -969,6 +1018,14 @@ select {
   .draw-list {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  .capture-stage {
+    aspect-ratio: 3 / 4;
+    max-width: 480px;
+    margin-inline: auto;
+    min-height: 380px;
+    max-height: 68vh;
+  }
 }
 
 .draw-actions {
@@ -1117,6 +1174,11 @@ select {
   .numinput {
     width: 3rem;
   }
+
+  .capture-actions .btn {
+    flex: 1 1 0;
+    min-width: 130px;
+  }
 }
 
 /* Extracted fields fade in once, when the camera hands them over (MOTION 1). */
@@ -1137,10 +1199,6 @@ select {
   }
 }
 
-.capture-drop.is-dragging {
-  border-color: var(--royal-blue);
-  background: var(--royal-blue-wash);
-}
 
 .status--spaced {
   margin-bottom: var(--s-5);
@@ -1177,6 +1235,7 @@ select {
   z-index: 2;
 }
 
+/* Big screens (Default) */
 .ticket-guide__frame {
   position: relative;
   width: 70%;
@@ -1184,6 +1243,14 @@ select {
   border: 1.5px dashed rgba(255, 255, 255, 0.7);
   border-radius: var(--r-sm);
   box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.5);
+}
+
+/* Small screens */
+@media (max-width: 767px) {
+  .ticket-guide__frame {
+    width: 90%;
+    height: 60%;
+  }
 }
 
 .ticket-guide__corner {
