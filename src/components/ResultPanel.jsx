@@ -19,7 +19,7 @@ function ResultRow({ result }) {
         <span className="label-chip" aria-hidden="true">
           {result.label}
         </span>
-        <span className="result__title">Combination {result.label}</span>
+        <span className="result__title">Combination</span>
         <Verdict result={result} />
       </div>
 

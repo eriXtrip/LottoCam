@@ -637,6 +637,12 @@ select {
   gap: var(--s-2);
 }
 
+@media (max-width: 767px) {
+  .cells {
+    gap: 0.25rem;
+  }
+}
+
 .numinput {
   width: 3.4rem;
   min-height: 44px;
@@ -650,6 +656,23 @@ select {
   background: var(--white);
   color: var(--ink);
   transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+@media (max-width: 767px) {
+  .numinput {
+    width: 2rem;
+    min-height: 28px;
+    padding: 0.35rem 0.1rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r);
+    background: var(--white);
+    color: var(--ink);
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+  }
 }
 
 .numinput:focus {
@@ -1248,7 +1271,7 @@ select {
 /* Small screens */
 @media (max-width: 767px) {
   .ticket-guide__frame {
-    width: 90%;
+    width: 95%;
     height: 60%;
   }
 }
@@ -1306,6 +1329,50 @@ select {
   text-transform: uppercase;
   white-space: nowrap;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Scan state: frozen frame plus scattered ripples, 3s, one cycle. */
+.ticket-guide__ripples {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ticket-guide__ripple {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 76px;
+  height: 76px;
+  margin: -38px 0 0 -38px;
+  border: 2px solid rgba(252, 209, 22, 0.85);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(252, 209, 22, 0.2), rgba(252, 209, 22, 0) 70%);
+  opacity: 0;
+  animation: ticket-guide-ripple 1500ms ease-out var(--d) both;
+}
+
+@keyframes ticket-guide-ripple {
+  0% {
+    transform: scale(0.15);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticket-guide__ripple {
+    animation: none;
+    transform: scale(1.2);
+    opacity: 0.4;
+  }
 }
 
 /* Mobile ticket summary and manual trigger *********************************/

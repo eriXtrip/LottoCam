@@ -20,8 +20,8 @@ ledger language, dial ENERGY 2 / RHYTHM 2 / MOTION 1.
 - **ENERGY 2** — confident, calm. It states what it does and gets out of the way.
 - **RHYTHM 2** — one system with deliberate breaks. The capture stage and the result stage do not
   look the same.
-- **MOTION 1** — hover and focus states, and one short reveal when extracted data appears. No loops,
-  no parallax.
+- **MOTION 1** — hover and focus states, one short reveal when extracted data appears, and one
+  bounded 3s ripple over the frozen frame after a scan. No endless loops, no parallax.
 
 ## Identity motif: Minimalist Philippine National Palette
 
@@ -57,8 +57,8 @@ Three roles, cleanly separated, maintaining a minimalist look without artificial
 - **Radius**: small and deliberate. 3px on inputs and number cells, 6px on panels, 10px only on the
   camera panel, the one raised surface on the page. Not pill-shaped.
 - **Shadow**: reserved for the capture surface and the result panel. Everything else sits flat.
-- **Motion**: 120ms ease on hover and focus, one 200ms reveal when extracted fields populate.
-  Nothing loops.
+- **Motion**: 120ms ease on hover and focus, one 200ms reveal when extracted fields populate, one
+  3s scattered-ripple pass after the shutter. Nothing loops without an end.
 
 ## Layout
 

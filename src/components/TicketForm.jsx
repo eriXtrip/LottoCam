@@ -140,7 +140,7 @@ export default function TicketForm({
                     <span className="label-chip" aria-hidden="true">
                       {combo.label}
                     </span>
-                    Combination {combo.label}
+                    Combination
                   </span>
                   {ticket.combinations.length > 1 ? (
                     <button

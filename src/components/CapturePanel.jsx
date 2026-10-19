@@ -11,17 +11,65 @@ function cameraMessage(cause) {
   return 'The camera could not start. Choose a saved photo instead.'
 }
 
+/* The captured frame is held on screen for this long while the scan plays. */
+const SCAN_MS = 3000
+
+/* Scattered ripple origins inside the guide frame, staggered across SCAN_MS. */
+const SCAN_RIPPLES = [
+  { x: '24%', y: '26%', delay: 0 },
+  { x: '70%', y: '34%', delay: 300 },
+  { x: '46%', y: '52%', delay: 600 },
+  { x: '18%', y: '66%', delay: 900 },
+  { x: '76%', y: '74%', delay: 1200 },
+  { x: '42%', y: '84%', delay: 1500 },
+]
+
+/* Maps the guide frame's on-screen box to source pixels of a video rendered
+   with object-fit: cover, so the capture keeps only the framed ticket. */
+function frameSourceRect(video, frame) {
+  const vw = video.videoWidth
+  const vh = video.videoHeight
+  const videoBox = video.getBoundingClientRect()
+  const frameBox = frame?.getBoundingClientRect()
+  if (!vw || !vh || !frameBox || !videoBox.width || !videoBox.height) return null
+
+  const scale = Math.max(videoBox.width / vw, videoBox.height / vh)
+  const drawnWidth = vw * scale
+  const drawnHeight = vh * scale
+  const offsetX = (drawnWidth - videoBox.width) / 2
+  const offsetY = (drawnHeight - videoBox.height) / 2
+
+  const x = (frameBox.left - videoBox.left + offsetX) / scale
+  const y = (frameBox.top - videoBox.top + offsetY) / scale
+  const width = frameBox.width / scale
+  const height = frameBox.height / scale
+
+  const sx = Math.min(Math.max(x, 0), vw - 1)
+  const sy = Math.min(Math.max(y, 0), vh - 1)
+  const sw = Math.min(Math.max(width, 1), vw - sx)
+  const sh = Math.min(Math.max(height, 1), vh - sy)
+  if (sw < 1 || sh < 1) return null
+  return { sx, sy, sw, sh }
+}
+
 export default function CapturePanel({ disabled, onImage, preview }) {
   const videoRef = useRef(null)
+  const frameRef = useRef(null)
   const streamRef = useRef(null)
   const fileRef = useRef(null)
   const [streaming, setStreaming] = useState(false)
   const [starting, setStarting] = useState(false)
   const [dragging, setDragging] = useState(false)
+  const [scanning, setScanning] = useState(false)
+  const [shotUrl, setShotUrl] = useState('')
   const [error, setError] = useState('')
+  const scanTimerRef = useRef(null)
+  const shotObjectRef = useRef(null)
 
   useEffect(() => {
     return () => {
+      if (scanTimerRef.current) clearTimeout(scanTimerRef.current)
+      if (shotObjectRef.current) URL.revokeObjectURL(shotObjectRef.current)
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop())
         streamRef.current = null
@@ -90,7 +138,7 @@ export default function CapturePanel({ disabled, onImage, preview }) {
     }
   }
 
-  function stopCamera() {
+  function stopStream() {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop())
       streamRef.current = null
@@ -101,27 +149,94 @@ export default function CapturePanel({ disabled, onImage, preview }) {
     setStreaming(false)
   }
 
+  function clearShot() {
+    if (shotObjectRef.current) {
+      URL.revokeObjectURL(shotObjectRef.current)
+      shotObjectRef.current = null
+    }
+    setShotUrl('')
+  }
+
+  function stopCamera() {
+    if (scanTimerRef.current) {
+      clearTimeout(scanTimerRef.current)
+      scanTimerRef.current = null
+    }
+    setScanning(false)
+    clearShot()
+    stopStream()
+  }
+
+  /* Uploaded photos play the same 3s ripple before they are handed off. */
+  function scanUpload(file) {
+    if (scanning) return
+    const url = URL.createObjectURL(file)
+    shotObjectRef.current = url
+    stopStream()
+    setShotUrl(url)
+    setScanning(true)
+    scanTimerRef.current = setTimeout(() => {
+      scanTimerRef.current = null
+      onImage(file)
+      clearShot()
+      setScanning(false)
+    }, SCAN_MS)
+  }
+
   function capture() {
     const video = videoRef.current
+    if (scanning) return
     if (!video || !video.videoWidth || !video.videoHeight) {
       setError('The camera has not produced a frame yet. Wait a moment, then try again.')
       return
     }
+    const crop = frameSourceRect(video, frameRef.current)
     const canvas = document.createElement('canvas')
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
+    canvas.width = crop ? Math.round(crop.sw) : video.videoWidth
+    canvas.height = crop ? Math.round(crop.sh) : video.videoHeight
     const ctx = canvas.getContext('2d')
     if (!ctx) {
       setError('Could not process the camera frame. Try taking another photo.')
       return
     }
-    ctx.drawImage(video, 0, 0)
+    const started = performance.now()
+    if (crop) {
+      ctx.drawImage(
+        video,
+        Math.round(crop.sx),
+        Math.round(crop.sy),
+        Math.round(crop.sw),
+        Math.round(crop.sh),
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+      )
+    } else {
+      ctx.drawImage(video, 0, 0)
+    }
+
+    stopStream()
+    setShotUrl(canvas.toDataURL('image/jpeg', 0.92))
+    setScanning(true)
+
     canvas.toBlob(
       (blob) => {
-        if (blob) {
-          onImage(blob)
-          stopCamera()
+        if (!blob) {
+          setScanning(false)
+          clearShot()
+          setError('Could not save the camera frame. Try scanning again.')
+          return
         }
+        scanTimerRef.current = setTimeout(
+          () => {
+            scanTimerRef.current = null
+            onImage(blob)
+            clearShot()
+            setScanning(false)
+          },
+          Math.max(0, SCAN_MS - (performance.now() - started)),
+        )
       },
       'image/jpeg',
       0.92,
@@ -130,22 +245,21 @@ export default function CapturePanel({ disabled, onImage, preview }) {
 
   function pickFile(event) {
     const file = event.target.files?.[0]
-    if (file) {
-      if (streaming) stopCamera()
-      onImage(file)
-    }
     event.target.value = ''
+    if (!file || scanning) return
+    if (!file.type.startsWith('image/')) {
+      setError('That file is not an image. Choose a photo instead.')
+      return
+    }
+    scanUpload(file)
   }
 
   function handleDrop(event) {
     event.preventDefault()
     setDragging(false)
-    if (disabled) return
+    if (disabled || scanning) return
     const file = event.dataTransfer.files?.[0]
-    if (file && file.type.startsWith('image/')) {
-      if (streaming) stopCamera()
-      onImage(file)
-    }
+    if (file && file.type.startsWith('image/')) scanUpload(file)
   }
 
   return (
@@ -158,11 +272,24 @@ export default function CapturePanel({ disabled, onImage, preview }) {
       </div>
 
       <div className="capture-stage">
-        {streaming ? (
+        {scanning && shotUrl ? (
+          <>
+            <img src={shotUrl} alt="The ticket frame you just captured" />
+            <div className="ticket-guide__ripples" aria-hidden="true">
+              {SCAN_RIPPLES.map((ripple) => (
+                <span
+                  key={`${ripple.x}-${ripple.y}`}
+                  className="ticket-guide__ripple"
+                  style={{ '--x': ripple.x, '--y': ripple.y, '--d': `${ripple.delay}ms` }}
+                />
+              ))}
+            </div>
+          </>
+        ) : streaming ? (
           <>
             <video ref={attachVideo} autoPlay muted playsInline />
             <div className="ticket-guide" aria-hidden="true">
-              <div className="ticket-guide__frame">
+              <div className="ticket-guide__frame" ref={frameRef}>
                 <span className="ticket-guide__corner ticket-guide__corner--tl" />
                 <span className="ticket-guide__corner ticket-guide__corner--tr" />
                 <span className="ticket-guide__corner ticket-guide__corner--bl" />
@@ -181,9 +308,23 @@ export default function CapturePanel({ disabled, onImage, preview }) {
       </div>
 
       <div className="capture-actions">
-        {streaming ? (
+        {scanning ? (
           <>
-            <button type="button" className="btn btn--primary" onClick={capture} disabled={disabled}>
+            <button type="button" className="btn btn--primary" disabled>
+              Scanning…
+            </button>
+            <button type="button" className="btn btn--ghost" onClick={stopCamera}>
+              Cancel
+            </button>
+          </>
+        ) : streaming ? (
+          <>
+            <button
+              type="button"
+              className="btn btn--primary"
+              onClick={capture}
+              disabled={disabled}
+            >
               Scan
             </button>
             <button type="button" className="btn btn--ghost" onClick={stopCamera} disabled={disabled}>
@@ -214,7 +355,7 @@ export default function CapturePanel({ disabled, onImage, preview }) {
         type="button"
         className={dragging ? 'capture-drop is-dragging' : 'capture-drop'}
         onClick={() => {
-          if (!disabled) fileRef.current?.click()
+          if (!disabled && !scanning) fileRef.current?.click()
         }}
         onDragOver={(event) => {
           event.preventDefault()
@@ -222,7 +363,7 @@ export default function CapturePanel({ disabled, onImage, preview }) {
         }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
-        disabled={disabled}
+        disabled={disabled || scanning}
       >
         <span className="capture-drop__label">
           <span className="capture-drop__action">Choose a photo</span> or drop it here
