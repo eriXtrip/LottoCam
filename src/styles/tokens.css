@@ -1,0 +1,75 @@
+:root {
+  /* User-specified Minimalist Philippine Palette */
+  --royal-blue: #0038A8;
+  --royal-blue-hover: #002d87;
+  --royal-blue-wash: #e8f0fe;
+  --national-red: #CE1126;
+  --national-red-hover: #b00e1f;
+  --national-red-wash: #fde8ea;
+  --golden-yellow: #FCD116;
+  --golden-yellow-wash: #fffbeb;
+  --white: #FFFFFF;
+
+  /* Surfaces & Canvas (Minimalist) */
+  --paper: #FFFFFF;
+  --paper-raised: #FFFFFF;
+  --paper-subtle: #F8FAFC;
+
+  /* Typography / Inks */
+  --ink: #0F172A;
+  --ink-soft: #64748B;
+  --ink-muted: #94A3B8;
+
+  /* Clean Minimalist Borders */
+  --line: #E2E8F0;
+  --line-strong: #CBD5E1;
+  --field-line: #CBD5E1;
+
+  /* Primary Accent (Royal Blue #0038A8) */
+  --accent: #0038A8;
+  --accent-strong: #002D87;
+  --accent-ink: #FFFFFF;
+  --accent-wash: #E8F0FE;
+
+  /* Action Trigger (National Red #CE1126 for Scan & Alerts) */
+  --action: #CE1126;
+  --action-hover: #B00E1F;
+  --action-ink: #FFFFFF;
+  --action-wash: #FDE8EA;
+
+  /* Win State (Golden Yellow #FCD116 & Contrast Dark Ink) */
+  --win: #B45309;
+  --win-badge: #FCD116;
+  --win-wash: #FEF9C3;
+  --win-border: #FCD116;
+
+  /* Error State (National Red #CE1126) */
+  --error: #CE1126;
+  --error-wash: #FDE8EA;
+
+  /* Clean Modern Sans Typography */
+  --font-display: 'Public Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Public Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Minimalist Radii (Subtle, Crisp, Clean) */
+  --r: 4px;
+  --r-sm: 6px;
+  --r-lg: 10px;
+
+  /* Spacing Scale */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2.25rem;
+  --s-7: 3.5rem;
+
+  /* Subtle Minimalist Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-raised: 0 4px 16px -4px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --focus: 0 0 0 2px #FFFFFF, 0 0 0 4px #0038A8;
+
+  --shell: 72rem;
+}
