@@ -6,6 +6,21 @@ import {
   checkCombination,
   drawDaysLabel,
 } from '../lib/games.js'
+import { useRef } from 'react'
+
+function formatIsoToDdMonYy(iso) {
+  if (!iso) return ''
+  const parts = String(iso).split('-')
+  if (parts.length !== 3) return ''
+  const year = parts[0]
+  const month = Number(parts[1])
+  const day = parts[2]
+  if (!year || !month) return ''
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const mon = monthNames[month - 1]
+  if (!mon) return ''
+  return `${day.padStart(2, '0')}-${mon}-${year.slice(-2)}`
+}
 
 function toNumbers(cells) {
   return cells.map((value) => (value === '' || value == null ? null : Number(value)))
@@ -34,11 +49,17 @@ export default function TicketForm({
   canCheck,
   missing,
 }) {
+  const moveTimers = useRef({})
   function update(patch) {
     onChange({ ...ticket, ...patch })
   }
 
   function setCell(comboIndex, cellIndex, raw) {
+    const key = `${comboIndex}-${cellIndex}`
+    if (moveTimers.current[key]) {
+      clearTimeout(moveTimers.current[key])
+      delete moveTimers.current[key]
+    }
     const digits = raw.replace(/\D/g, '').slice(0, 2)
     const combinations = ticket.combinations.map((combo, index) => {
       if (index !== comboIndex) return combo
@@ -47,6 +68,43 @@ export default function TicketForm({
       return { ...combo, numbers }
     })
     update({ combinations })
+    
+    if (digits.length === 0) return
+    if (digits.length === 2 && cellIndex < NUMBERS_PER_COMBINATION - 1) {
+      const next = document.querySelector(
+        `[data-combo="${comboIndex}"][data-cell="${cellIndex + 1}"]`,
+      )
+      if (next) {
+        next.focus()
+        next.select?.()
+      }
+      return
+    }
+    if (digits.length === 1 && cellIndex < NUMBERS_PER_COMBINATION - 1) {
+      moveTimers.current[key] = setTimeout(() => {
+        delete moveTimers.current[key]
+        const currentCombos = ticket.combinations
+        const currentVal = currentCombos[comboIndex]?.numbers[cellIndex] || ''
+        const currentDigits = String(currentVal).replace(/\D/g, '')
+        if (currentDigits.length === 1) {
+          // Pad with leading zero and store
+          const updated = ticket.combinations.map((c, i) => {
+            if (i !== comboIndex) return c
+            const nums = c.numbers.slice()
+            nums[cellIndex] = currentDigits.padStart(2, '0')
+            return { ...c, numbers: nums }
+          })
+          update({ combinations: updated })
+          const next = document.querySelector(
+            `[data-combo="${comboIndex}"][data-cell="${cellIndex + 1}"]`,
+          )
+          if (next) {
+            next.focus()
+            next.select?.()
+          }
+        }
+      }, 7000)
+    }
   }
 
   function addCombination() {
@@ -119,13 +177,23 @@ export default function TicketForm({
 
           <label className="field">
             <span className="field__label">Draw date</span>
-            <input
-              className="input"
-              type="date"
-              value={ticket.drawDate ?? ''}
-              disabled={disabled}
-              onChange={(event) => update({ drawDate: event.target.value || null })}
-            />
+            <div className="date-picker-wrapper">
+              <input
+                className="input date-picker-display"
+                type="text"
+                placeholder="DD-Mon-YY"
+                value={ticket.drawDate ? formatIsoToDdMonYy(ticket.drawDate) : ''}
+                readOnly
+                disabled={disabled}
+              />
+              <input
+                className="input date-picker-input"
+                type="date"
+                value={ticket.drawDate ?? ''}
+                disabled={disabled}
+                onChange={(event) => update({ drawDate: event.target.value || null })}
+              />
+            </div>
             <span className="field__hint">The draw night printed on the ticket.</span>
           </label>
         </div>
@@ -161,12 +229,39 @@ export default function TicketForm({
                       className="numinput"
                       inputMode="numeric"
                       autoComplete="off"
+                      data-combo={comboIndex}
+                      data-cell={cellIndex}
                       aria-label={`Combination ${combo.label}, number ${cellIndex + 1}`}
                       aria-invalid={
                         game && cellIsInvalid(combo.numbers, cellIndex, game) ? 'true' : undefined
                       }
-                      value={value}
+                      value={value === '' || value == null ? '' : String(value).replace(/\D/g).length === 2 ? String(value).replace(/\D/g).padStart(2, '0') : String(value).replace(/\D/g)}
                       disabled={disabled}
+                      onFocus={(event) => {
+                        const v = String(event.target.value).replace(/\D/g, '')
+                        if (v.length === 1) event.target.value = v
+                      }}
+                      onBlur={(event) => {
+                        const v = String(event.target.value).replace(/\D/g, '')
+                        const combos = ticket.combinations.map((c, i) => {
+                          if (i !== comboIndex) return c
+                          const nums = c.numbers.slice()
+                          nums[cellIndex] = v.length === 1 ? v.padStart(2, '0') : v.slice(0, 2)
+                          return { ...c, numbers: nums }
+                        })
+                        update({ combinations })
+                        const key = `${comboIndex}-${cellIndex}`
+                        if (moveTimers.current[key]) {
+                          clearTimeout(moveTimers.current[key])
+                          delete moveTimers.current[key]
+                        }
+                        if (v.length === 1 && cellIndex < NUMBERS_PER_COMBINATION - 1) {
+                          const next = document.querySelector(`[data-combo="${comboIndex}"][data-cell="${cellIndex + 1}"]`)
+                          if (next) {
+                            setTimeout(() => { next.focus(); next.select?.() }, 7000)
+                          }
+                        }
+                      }}
                       onChange={(event) => setCell(comboIndex, cellIndex, event.target.value)}
                     />
                   ))}

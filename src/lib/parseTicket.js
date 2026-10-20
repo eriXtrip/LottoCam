@@ -1,5 +1,4 @@
 import {
-  COMBINATION_LABELS,
   MAX_COMBINATIONS,
   NUMBERS_PER_COMBINATION,
   matchGame,
@@ -47,17 +46,17 @@ const MONTHS = {
   D: 12, // December (only month starting with D)
 }
 
-// A label starts a combination when it sits on its own and a number group follows, with an optional
-// Lucky Pick marker in between: "A:09 19 24 27 43 33", "A. 07-14", "B LP 02-11". The `(?<!\d)` style guard below keeps a
-// ticket serial like 1234-5678-9012 from being read as number groups.
-const LABEL_PATTERN = /(^|\n|\s)([A-D])\s*[:.);\-]?\s*(?=(?:LP\s*)?\d)/g
+// A label starts a combination only when it is a colon-suffixed A/B/C/D: "A:09 19 24 27 43 33",
+// "A: 07-14", "B: LP 02-11". The `(?<!\d)` style guard below keeps a ticket serial like
+// 1234-5678-9012 from being read as number groups.
+const LABEL_PATTERN = /(^|\n|\s)([A-D])\s*:\s*(?=(?:LP\s*)?\d)/g
 const NUMBER_RUN = /(?<!\d)\d{1,2}(?!\d)/g
 
 function pad2(value) {
   return String(value).padStart(2, '0')
 }
 
-function toIso(year, month, day) {
+export function toIso(year, month, day) {
   let y = Number(year)
   if (y >= 0 && y < 100) {
     y = 2000 + y
@@ -73,7 +72,7 @@ function toIso(year, month, day) {
   return stable ? `${y}-${pad2(m)}-${pad2(d)}` : null
 }
 
-function monthFromToken(token) {
+export function monthFromToken(token) {
   const cleaned = String(token ?? '')
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, '')
@@ -95,68 +94,27 @@ function extractNumbers(text) {
   return found ? found.map(Number) : []
 }
 
+// Ticket draw date tokens. The only accepted shapes are the on-ticket spellings of the day, a
+// dash-separated day-month-year body, and an optional leading weekday: "Fri 25-Sep-26", "Fr 25-Sep-26",
+// "F 25-Sep-26". A "Draw"/"Dr" header may precede the date, optionally followed by a 7-character
+// alphanumeric draw number and a weekday: "Draw 09-Sep-26", "Draw J000456 NeD 09-Sep-26",
+// "Draw 0000456 WED 09-Sep-26", "Dr 0000456 W 09-Sep-26".
+const DRAW_PREFIX = String.raw`(?:DRAW|DR)(?:\s*(?:NO\.?|#|:))?\s*(?:[A-Z0-9]{7}\s+)?(?:[A-Z]{1,3}[.,]?\s+)?`
+const MONTH_DATE_PATTERN = new RegExp(`(?:${DRAW_PREFIX})?(?:^|[^A-Z0-9])(\\d{1,2})-([A-Z]{1,3})-(\\d{2})(?![0-9])`)
+const DRAW_MONTH_DATE_PATTERN = new RegExp(`(?:^|[^A-Z0-9])${DRAW_PREFIX}(\\d{1,2})-([A-Z]{1,3})-(\\d{2})(?![0-9])`)
+
 export function findDrawDate(rawText) {
   const text = String(rawText ?? '').toUpperCase()
 
-  // 1. Primary PCSO Draw header pattern: "Draw 0000457 TUE 08-Sep-28", "DW 0000456 WED 09-Sep-26"
-  let match = text.match(
-    /\b(?:DRAW|DW)(?:\s*(?:NO\.?|#|:))?\s*(\d{3,8})\s+(?:(?:MON|TUE|WED|THU|FRI|SAT|SUN|[A-Z]{3,4})[.,]?\s+)?(\d{1,2})[\s\-\/.]([A-Z0-9]{1,9})\.?[\s\-\/.](20\d{2}|\d{2})\b/,
-  )
-  if (match) {
-    const month = monthFromToken(match[3])
-    if (month) {
-      const iso = toIso(match[4], month, match[2])
-      if (iso) return iso
-    }
-  }
+  // Prefer a date anchored to a "Draw"/"Dr" header so a stray serial cannot win.
+  let match = text.match(DRAW_MONTH_DATE_PATTERN)
+  if (!match) match = text.match(MONTH_DATE_PATTERN)
+  if (!match) return null
 
-  // 2. Draw line without draw number: "Draw TUE 08-Sep-28", "DW WED 09-Sep-26"
-  match = text.match(
-    /\b(?:DRAW|DW)(?:\s*(?:NO\.?|#|:))?\s+(?:(?:MON|TUE|WED|THU|FRI|SAT|SUN|[A-Z]{3,4})[.,]?\s+)?(\d{1,2})[\s\-\/.]([A-Z0-9]{1,9})\.?[\s\-\/.](20\d{2}|\d{2})\b/,
-  )
-  if (match) {
-    const month = monthFromToken(match[2])
-    if (month) {
-      const iso = toIso(match[3], month, match[1])
-      if (iso) return iso
-    }
-  }
+  const month = monthFromToken(match[2])
+  if (!month) return null
 
-  // 3. ISO format: 2026-10-18
-  match = text.match(/\b(20\d{2})-(\d{1,2})-(\d{1,2})\b/)
-  if (match) {
-    const iso = toIso(match[1], match[2], match[3])
-    if (iso) return iso
-  }
-
-  // 3. Numeric slash/dot: 10/18/2026 or 10/18/26
-  match = text.match(/\b(\d{1,2})[/.](\d{1,2})[/.](20\d{2}|\d{2})\b/)
-  if (match) {
-    const iso = toIso(match[3], match[1], match[2])
-    if (iso) return iso
-  }
-
-  // 4. Day-Month-Year (e.g. 08-S-26, 09-Sep-26, 18 Oct 2026, 09-SEP-2026)
-  match = text.match(/\b(\d{1,2})[\s\-\/.]([A-Z0-9]{1,9})\.?[\s\-\/.](20\d{2}|\d{2})\b/)
-  if (match) {
-    const month = monthFromToken(match[2])
-    if (month) {
-      const iso = toIso(match[3], month, match[1])
-      if (iso) return iso
-    }
-  }
-
-  // 5. Month-Day-Year (e.g. OCT 18, 2026 or OCT 18 2026)
-  match = text.match(/\b([A-Z]{3,9})\.?[\s\-\/.](\d{1,2}),?[\s\-\/.](20\d{2}|\d{2})\b/)
-  if (match) {
-    const month = monthFromToken(match[1])
-    if (month) {
-      const iso = toIso(match[3], month, match[2])
-      if (iso) return iso
-    }
-  }
-
-  return null
+  return toIso(match[3], month, match[1])
 }
 
 function splitLabeled(text) {
@@ -186,15 +144,7 @@ function extractCombinations(text) {
     combos.push({ label: segment.label, numbers })
     if (combos.length === MAX_COMBINATIONS) break
   }
-  if (combos.length > 0) return combos
 
-  // No labels survived OCR. Accept any line that reads as exactly six numbers.
-  for (const line of text.split(/\r?\n/)) {
-    const numbers = extractNumbers(line)
-    if (numbers.length !== NUMBERS_PER_COMBINATION) continue
-    combos.push({ label: COMBINATION_LABELS[combos.length], numbers })
-    if (combos.length === MAX_COMBINATIONS) break
-  }
   return combos
 }
 

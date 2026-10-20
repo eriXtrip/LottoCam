@@ -1521,3 +1521,7 @@ select {
     max-height: 85dvh;
   }
 }
+.date-picker-wrapper{position:relative;display:flex;align-items:center;}
+.date-picker-display{width:100%;}
+.date-picker-input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer;}
+.date-picker-input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;cursor:pointer;}

@@ -163,9 +163,9 @@ export default function ScanPage() {
     })
       .then((text) => {
         if (cancelled) return
-        console.log(`[LottoCam OCR (${ACTIVE_OCR})] Extracted text:\n`, text)
+        // console.log(`[LottoCam OCR (${ACTIVE_OCR})] Extracted text:\n`, text)
         const parsed = parseTicket(text)
-        console.log(`[LottoCam OCR (${ACTIVE_OCR})] Parsed ticket:`, parsed)
+        // console.log(`[LottoCam OCR (${ACTIVE_OCR})] Parsed ticket:`, parsed)
         setTicket(toFormTicket(parsed))
         setFillKey((key) => key + 1)
         setOcr({ state: 'done', label: '' })
@@ -283,8 +283,8 @@ export default function ScanPage() {
 
   const hasExtractedData = Boolean(
     ticket.category ||
-      ticket.drawDate ||
-      ticket.combinations.some((combo) => combo.numbers.some((num) => num !== '')),
+    ticket.drawDate ||
+    ticket.combinations.some((combo) => combo.numbers.some((num) => num !== '')),
   )
 
   const ticketFormElement = (
