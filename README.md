@@ -69,6 +69,10 @@ functions and Vercel project settings.
 - Saved tickets live in this browser's local storage only.
 - Attribution to LottoResulta is required when you republish their data.
 
+## Disclaimer
+
+This is a personal/educational project. The author assumes no responsibility for any use or misuse. LottoCam is not an official PCSO product. Results and information provided by this site/app may be inaccurate or out of date. Always verify against the official PCSO website before claiming prizes. Under no circumstances will the author be liable for any loss or damage arising from the use of this tool.
+
 ## Design
 
 The visual direction lives in `DESIGN.md`. Agent notes and commands live in `AGENTS.md`.
