@@ -3,6 +3,7 @@ import AppShell from './components/AppShell.jsx'
 import ScanPage from './pages/ScanPage.jsx'
 import ResultsPage from './pages/ResultsPage.jsx'
 import TermsPage from './pages/TermsPage.jsx'
+import DisclaimerPage from './pages/DisclaimerPage.jsx'
 
 function NotFound() {
   return (
@@ -25,10 +26,11 @@ export default function App() {
   return (
     <AppShell>
       <Routes>
-        <Route path="/" element={<ScanPage />} />
-        <Route path="/results" element={<ResultsPage />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="*" element={<NotFound />} />
+          <Route path="/" element={<ScanPage />} />
+          <Route path="/results" element={<ResultsPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/disclaimer" element={<DisclaimerPage />} />
+          <Route path="*" element={<NotFound />} />
       </Routes>
     </AppShell>
   )

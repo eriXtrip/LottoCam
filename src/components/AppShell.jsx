@@ -1,9 +1,6 @@
-import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 
 export default function AppShell({ children }) {
-  const [isTermsOpen, setIsTermsOpen] = useState(false)
-
   return (
     <div className="shell">
       <header className="shell-header">
@@ -41,16 +38,12 @@ export default function AppShell({ children }) {
             </div>
 
             <nav className="shell-footer__nav" aria-label="Footer links">
-              <button
-                type="button"
-                className="footer-link-btn"
-                onClick={() => setIsTermsOpen(true)}
-              >
-                Terms of Use
-              </button>
-              <span aria-hidden="true">•</span>
               <Link to="/terms">
-                Full Legal Page
+                Terms of Use
+              </Link>
+              <span aria-hidden="true">•</span>
+              <Link to="/disclaimer">
+                Disclaimer
               </Link>
               <span aria-hidden="true">•</span>
               <a
@@ -102,138 +95,6 @@ export default function AppShell({ children }) {
           </div>
         </div>
       </footer>
-
-      {/* Terms of Use Modal */}
-      {isTermsOpen ? (
-        <div
-          className="ticket-modal-backdrop"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsTermsOpen(false)
-          }}
-          role="presentation"
-        >
-          <div
-            className="ticket-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="terms-modal-title"
-            style={{ maxWidth: '46rem' }}
-          >
-            <div className="ticket-modal__head">
-              <div>
-                <span className="ticket-modal__tag">Legal agreement</span>
-                <h2 id="terms-modal-title" className="ticket-modal__title">
-                  Terms of Use
-                </h2>
-              </div>
-              <button
-                type="button"
-                className="ticket-modal__close"
-                onClick={() => setIsTermsOpen(false)}
-                aria-label="Close Terms of Use"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="ticket-modal__body" style={{ gap: 'var(--s-4)' }}>
-              <section>
-                <h3 style={{ fontSize: '1rem', color: 'var(--royal-blue)', marginBottom: 'var(--s-1)' }}>
-                  1. Developer Attribution
-                </h3>
-                <p>
-                  <strong>LottoCam</strong> is an independent software tool developed by{' '}
-                  <strong>Jon Eric D. Tripulca</strong>.
-                </p>
-              </section>
-
-              <section>
-                <h3 style={{ fontSize: '1rem', color: 'var(--royal-blue)', marginBottom: 'var(--s-1)' }}>
-                  2. Non-Affiliation Disclaimer
-                </h3>
-                <p>
-                  LottoCam is not affiliated, endorsed by, certified by, or connected to the
-                  Philippine Charity Sweepstakes Office (PCSO) or any Philippine government entity.
-                  All PCSO game names, logos, and trademarks belong to their respective statutory owners.
-                </p>
-              </section>
-
-              <section>
-                <h3 style={{ fontSize: '1rem', color: 'var(--royal-blue)', marginBottom: 'var(--s-1)' }}>
-                  3. Information & Reference Purpose
-                </h3>
-                <p>
-                  Drawn numbers and verification results are aggregated for informational and
-                  convenience purposes only. Always verify your physical lottery ticket with an
-                  authorized PCSO retail outlet or at{' '}
-                  <a href="https://www.pcso.gov.ph" target="_blank" rel="noreferrer">
-                    pcso.gov.ph
-                  </a>{' '}
-                  before claiming any prize or discarding your ticket.
-                </p>
-              </section>
-
-              <section>
-                <h3 style={{ fontSize: '1rem', color: 'var(--royal-blue)', marginBottom: 'var(--s-1)' }}>
-                  4. No Betting or Gambling Services
-                </h3>
-                <p>
-                  LottoCam is strictly an optical ticket reader. It does not sell lottery tickets,
-                  collect bets, process wagers, or distribute prizes.
-                </p>
-              </section>
-
-              <section>
-                <h3 style={{ fontSize: '1rem', color: 'var(--royal-blue)', marginBottom: 'var(--s-1)' }}>
-                  5. Client-Side Privacy
-                </h3>
-                <p>
-                  Ticket scanning runs 100% locally in your browser. Camera frames and ticket images
-                  are never transmitted to or stored on any server.
-                </p>
-              </section>
-
-              <section>
-                <h3 style={{ fontSize: '1rem', color: 'var(--royal-blue)', marginBottom: 'var(--s-1)' }}>
-                  6. Limitation of Liability
-                </h3>
-                <p>
-                  The developer (Jon Eric D. Tripulca) and LottoCam disclaim all liability for any
-                  damages, missed prize claim deadlines, OCR recognition inaccuracies, or reliance
-                  on third-party draw feeds.
-                </p>
-              </section>
-
-              <section>
-                <h3 style={{ fontSize: '1rem', color: 'var(--royal-blue)', marginBottom: 'var(--s-1)' }}>
-                  7. Age Restriction
-                </h3>
-                <p>
-                  Participants in PCSO lottery games must be at least 18 years of age. Please play
-                  responsibly.
-                </p>
-              </section>
-
-              <div className="btn-row" style={{ marginTop: 'var(--s-3)' }}>
-                <button
-                  type="button"
-                  className="btn btn--primary"
-                  onClick={() => setIsTermsOpen(false)}
-                >
-                  Close
-                </button>
-                <Link
-                  to="/terms"
-                  className="btn btn--ghost"
-                  onClick={() => setIsTermsOpen(false)}
-                >
-                  View full terms page
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
     </div>
   )
 }

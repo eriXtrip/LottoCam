@@ -60,18 +60,12 @@ drop area.
 No environment variables are required. If LottoResulta ever needs a key, add it in the proxy
 functions and Vercel project settings.
 
-## Limits and responsible use
+## Credits & APIs Used
 
-- LottoCam is an independent tool, not affiliated with PCSO. Results are a reference; verify every
-  combination at [pcso.gov.ph](https://www.pcso.gov.ph/SearchLottoResult.aspx) before claiming.
-- The barcode on a PCSO ticket is proprietary to PCSO terminals. LottoCam reads the printed text, not
-  the barcode, so a sharp photo matters.
-- Saved tickets live in this browser's local storage only.
-- Attribution to LottoResulta is required when you republish their data.
-
-## Disclaimer
-
-This is a personal/educational project. The author assumes no responsibility for any use or misuse. LottoCam is not an official PCSO product. Results and information provided by this site/app may be inaccurate or out of date. Always verify against the official PCSO website before claiming prizes. Under no circumstances will the author be liable for any loss or damage arising from the use of this tool.
+- **[LottoResulta](https://lottoresulta.com/)** – Third-party, CORS-open aggregator providing PCSO draw results. LottoCam uses it for live results via proxy in production (`/api/*`) and directly in dev. Attribution is required; this project is not affiliated with PCSO or LottoResulta. API docs: [lottoresulta.com/api-docs](https://lottoresulta.com/api-docs).
+- **[Tesseract.js](https://github.com/naptha/tesseract.js)** – OCR engine running entirely in the browser; ticket images never leave the device.
+- **[React](https://react.dev/)** + **[Vite](https://vitejs.dev/)** – UI and build tooling.
+- **[PCSO](https://www.pcso.gov.ph/)** – Official source for draw results and rules (must be used for prize verification).
 
 ## Design
 
