@@ -56,7 +56,7 @@ check('only reads combinations with a colon-suffixed A/B/C/D label', () => {
   assert.deepEqual(ticket.combinations, [])
 })
 
-check('reads four labelled combinations and stops at the cap', () => {
+check('reads six labelled combinations up to the cap', () => {
   const text = [
     'ULTRA LOTTO 6/58',
     'A: 01-02-03-04-05-06',
@@ -64,14 +64,17 @@ check('reads four labelled combinations and stops at the cap', () => {
     'C: 13-14-15-16-17-18',
     'D: 19-20-21-22-23-24',
     'E: 25-26-27-28-29-30',
+    'F: 31-32-33-34-35-36',
   ].join('\n')
   const ticket = parseTicket(text)
   assert.equal(ticket.category, '6-58-lotto')
-  assert.equal(ticket.combinations.length, 4)
+  assert.equal(ticket.combinations.length, 6)
   assert.deepEqual(
     ticket.combinations.map((combo) => combo.label),
-    ['A', 'B', 'C', 'D'],
+    ['A', 'B', 'C', 'D', 'E', 'F'],
   )
+  assert.deepEqual(ticket.combinations[4], { label: 'E', numbers: [25, 26, 27, 28, 29, 30] })
+  assert.deepEqual(ticket.combinations[5], { label: 'F', numbers: [31, 32, 33, 34, 35, 36] })
 })
 
 check('ignores unlabelled lines of six numbers', () => {

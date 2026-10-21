@@ -46,10 +46,10 @@ const MONTHS = {
   D: 12, // December (only month starting with D)
 }
 
-// A label starts a combination only when it is a colon-suffixed A/B/C/D: "A:09 19 24 27 43 33",
-// "A: 07-14", "B: LP 02-11". The `(?<!\d)` style guard below keeps a ticket serial like
-// 1234-5678-9012 from being read as number groups.
-const LABEL_PATTERN = /(^|\n|\s)([A-D])\s*:\s*(?=(?:LP\s*)?\d)/g
+// A label starts a combination only when it is a colon-suffixed A-F: "A:09 19 24 27 43 33",
+// "A: 07-14", "B: LP 02-11", "E: 25-26-27-28-29-30". The `(?<!\d)` style guard below keeps a
+// ticket serial like 1234-5678-9012 from being read as number groups.
+const LABEL_PATTERN = /(^|\n|\s)([A-F])\s*:\s*(?=(?:LP\s*)?\d)/g
 const NUMBER_RUN = /(?<!\d)\d{1,2}(?!\d)/g
 
 function pad2(value) {

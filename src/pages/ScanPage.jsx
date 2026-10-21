@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import CapturePanel from '../components/CapturePanel.jsx'
 import ResultPanel from '../components/ResultPanel.jsx'
 import TicketForm from '../components/TicketForm.jsx'
+import { WIN_EVENT } from '../components/WinConfetti.jsx'
 import {
   COMBINATION_LABELS,
   MAX_COMBINATIONS,
@@ -279,6 +280,10 @@ export default function ScanPage() {
     )
 
     setCheck({ state: 'done', results })
+
+    if (results.some((result) => result.won)) {
+      window.dispatchEvent(new CustomEvent(WIN_EVENT))
+    }
   }
 
   const hasExtractedData = Boolean(
@@ -317,7 +322,7 @@ export default function ScanPage() {
         <h1 className="page-title">Read a lotto ticket, then check the draw</h1>
         <p className="page-lede">
           Photograph a PCSO jackpot ticket or upload a photo. LottoCam reads the game, the draw date,
-          and up to four combinations. You confirm them, edit anything wrong, and check them against
+          and up to six combinations. You confirm them, edit anything wrong, and check them against
           the live result.
         </p>
       </div>

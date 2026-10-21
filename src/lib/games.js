@@ -1,6 +1,6 @@
-export const MAX_COMBINATIONS = 4
+export const MAX_COMBINATIONS = 6
 export const NUMBERS_PER_COMBINATION = 6
-export const COMBINATION_LABELS = ['A', 'B', 'C', 'D']
+export const COMBINATION_LABELS = ['A', 'B', 'C', 'D', 'E', 'F']
 
 // Major Jackpot (pari-mutuel) games only, per the product scope. `drawDays` is 0=Sun..6=Sat.
 export const JACKPOT_GAMES = [
@@ -73,7 +73,7 @@ export function matchGame(rawText) {
 
   // 1. Primary: Explicit 6/42, 6/45, 6/49, 6/55, 6/58 fraction detection.
   // Check the ticket header (before combinations) first, then fallback to full text.
-  const headerEnd = rawText.search(/(?:^|[\r\n\s])[A-D]\s*[:.);\-]?\s*(?=(?:LP\s*)?\d)/i)
+  const headerEnd = rawText.search(/(?:^|[\r\n\s])[A-F]\s*[:.);\-]?\s*(?=(?:LP\s*)?\d)/i)
   const header = headerEnd !== -1 ? rawText.slice(0, headerEnd) : rawText
 
   const headerMatch = header.match(FRACTION_REGEX)

@@ -14,7 +14,7 @@ import { createWorker } from 'tesseract.js'
 export const ACTIVE_OCR = 'version2' // 'version1' | 'version2'
 
 // PCSO tickets print mostly in upper case, but month abbreviations like Sep or draw labels may use mixed case.
-const TICKET_CHARS = '0123456789ABCDFJMNOSabcdegiklmnopqrstu.,:-/\u20b1 '
+const TICKET_CHARS = '0123456789ABCDEFJMNOSabcdegiklmnopqrstu.,:-/\u20b1 '
 
 let workerPromise = null
 let progressHandler = null

@@ -1,6 +1,7 @@
 import { Link, Route, Routes } from 'react-router-dom'
 import AppShell from './components/AppShell.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
+import WinConfetti from './components/WinConfetti.jsx'
 import ScanPage from './pages/ScanPage.jsx'
 import ResultsPage from './pages/ResultsPage.jsx'
 import TermsPage from './pages/TermsPage.jsx'
@@ -27,6 +28,7 @@ export default function App() {
   return (
     <AppShell>
       <ScrollToTop />
+      <WinConfetti />
       <Routes>
           <Route path="/" element={<ScanPage />} />
           <Route path="/results" element={<ResultsPage />} />

@@ -3,7 +3,7 @@
 Read a PCSO Major Jackpot ticket with your camera, confirm the printed numbers, and check them
 against the live draw.
 
-LottoCam is camera-first: it photographs a ticket, reads the game, draw date, and up to four
+LottoCam is camera-first: it photographs a ticket, reads the game, draw date, and up to six
 combinations, drops them into editable fields, and then checks each combination against the
 published result. OCR runs in the browser, so ticket images never leave the device.
 

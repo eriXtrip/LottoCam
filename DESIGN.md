@@ -8,7 +8,8 @@
 
 A camera-first utility for Filipino lotto players: photograph a PCSO Major Jackpot (pari-mutuel)
 ticket, confirm the printed numbers in editable fields, and check them against the live draw. It is
-a tool, not a casino. No confetti, no "win big" language.
+a tool, not a casino. One bounded paper-confetti burst when a checked combination wins, no "win
+big" language.
 
 ## Design Read
 
@@ -21,7 +22,9 @@ ledger language, dial ENERGY 2 / RHYTHM 2 / MOTION 1.
 - **RHYTHM 2** — one system with deliberate breaks. The capture stage and the result stage do not
   look the same.
 - **MOTION 1** — hover and focus states, one short reveal when extracted data appears, and one
-  bounded 3s ripple over the frozen frame after a scan. No endless loops, no parallax.
+  bounded 3s ripple over the frozen frame after a scan. One confetti burst when a win is
+  recognized: a single spawn, no looping, ended within 4s, skipped under reduced motion. No
+  endless loops, no parallax.
 
 ## Identity motif: Minimalist Philippine National Palette
 
@@ -69,5 +72,6 @@ Three roles, cleanly separated, maintaining a minimalist look without artificial
 ## What to avoid here
 
 - Dark-mode-by-default, blue-purple gradients, glassmorphism, glow, pill-shaped everything.
-- Casino language: jackpot magic, confetti, coins, sparkles. The accent red is ink, not excitement.
+- Casino language: jackpot magic, coins, sparkles. The accent red is ink, not excitement; the win
+  burst is printed paper rectangles in flag colors, one bounded pass, never a glitter shower.
 - Invented statistics or testimonials. The app shows real draws or nothing.
