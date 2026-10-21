@@ -1,0 +1,28 @@
+{
+  "id": "/",
+  "name": "LottoCam - PCSO Lotto Ticket Scanner",
+  "short_name": "LottoCam",
+  "description": "Photograph a PCSO Major Jackpot ticket, confirm the printed numbers, and check them against the live draw. OCR runs on your device.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0038A8",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

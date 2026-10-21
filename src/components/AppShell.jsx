@@ -1,4 +1,5 @@
 import { Link, NavLink } from 'react-router-dom'
+import InstallApp from './InstallApp.jsx'
 
 export default function AppShell({ children }) {
   return (
@@ -19,6 +20,7 @@ export default function AppShell({ children }) {
             <NavLink to="/results" className="nav__link">
               Latest draws
             </NavLink>
+            <InstallApp />
           </nav>
         </div>
       </header>

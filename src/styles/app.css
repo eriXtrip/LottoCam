@@ -152,6 +152,7 @@ select {
 
 .nav {
   display: flex;
+  align-items: center;
   gap: var(--s-5);
 }
 
@@ -172,6 +173,35 @@ select {
   color: var(--royal-blue);
   border-bottom-color: var(--royal-blue);
   font-weight: 600;
+}
+
+.install-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r);
+  background: var(--white);
+  color: var(--royal-blue);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.install-btn:hover {
+  border-color: var(--royal-blue);
+  background: var(--royal-blue-wash);
+}
+
+.install-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-color: var(--royal-blue);
 }
 
 .shell-main {
@@ -539,6 +569,33 @@ select {
   line-height: 1.45;
 }
 
+.capture-note {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: var(--s-3) 0 0;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+
+.capture-note__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--royal-blue);
+  animation: skeleton-dot-pulse 1.2s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capture-note__dot {
+    animation: none;
+  }
+}
+
 /* Fields ******************************************************************/
 
 .field {
@@ -815,16 +872,6 @@ select {
   height: 1rem;
 }
 
-.skeleton-bar--title {
-  width: 55%;
-  height: 1.25rem;
-}
-
-.skeleton-bar--subtitle {
-  width: 35%;
-  height: 0.85rem;
-}
-
 .skeleton-bar--sm {
   width: 40%;
   height: 0.85rem;
@@ -888,56 +935,6 @@ select {
   .skeleton-dot {
     animation: none;
   }
-}
-
-.ticket-skeleton {
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
-  padding: var(--s-4);
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-  margin-bottom: var(--s-4);
-  box-shadow: var(--shadow-sm);
-}
-
-.ticket-skeleton__header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-2);
-}
-
-.ticket-skeleton__combos {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-  margin-top: var(--s-1);
-}
-
-.ticket-skeleton__row {
-  display: flex;
-  align-items: center;
-  gap: var(--s-3);
-  flex-wrap: wrap;
-}
-
-.ticket-skeleton__balls {
-  display: flex;
-  gap: var(--s-2);
-  flex-wrap: wrap;
-}
-
-.ticket-skeleton__status {
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  color: var(--ink-soft);
-  margin-top: var(--s-2);
-  padding-top: var(--s-2);
-  border-top: 1px solid var(--line);
 }
 
 .result-skeleton {
@@ -1331,7 +1328,8 @@ select {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
-/* Scan state: frozen frame plus scattered ripples, 3s, one cycle. */
+/* Scan state: frozen frame plus scattered ripples. The pass loops until the
+   OCR extraction finishes, so the ripples keep moving while text is read. */
 .ticket-guide__ripples {
   position: absolute;
   inset: 0;
@@ -1350,7 +1348,7 @@ select {
   border-radius: 50%;
   background: radial-gradient(circle, rgba(252, 209, 22, 0.2), rgba(252, 209, 22, 0) 70%);
   opacity: 0;
-  animation: ticket-guide-ripple 1500ms ease-out var(--d) both;
+  animation: ticket-guide-ripple 1500ms ease-out calc(var(--d) * -1) infinite;
 }
 
 @keyframes ticket-guide-ripple {

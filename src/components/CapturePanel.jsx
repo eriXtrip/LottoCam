@@ -14,14 +14,15 @@ function cameraMessage(cause) {
 /* The captured frame is held on screen for this long while the scan plays. */
 const SCAN_MS = 3000
 
-/* Scattered ripple origins inside the guide frame, staggered across SCAN_MS. */
+/* Scattered ripple origins inside the guide frame. The animation loops while a
+   scan is running, so the delays spread one 1.5s cycle instead of a 3s pass. */
 const SCAN_RIPPLES = [
   { x: '24%', y: '26%', delay: 0 },
-  { x: '70%', y: '34%', delay: 300 },
-  { x: '46%', y: '52%', delay: 600 },
-  { x: '18%', y: '66%', delay: 900 },
-  { x: '76%', y: '74%', delay: 1200 },
-  { x: '42%', y: '84%', delay: 1500 },
+  { x: '70%', y: '34%', delay: 250 },
+  { x: '46%', y: '52%', delay: 500 },
+  { x: '18%', y: '66%', delay: 750 },
+  { x: '76%', y: '74%', delay: 1000 },
+  { x: '42%', y: '84%', delay: 1250 },
 ]
 
 /* Maps the guide frame's on-screen box to source pixels of a video rendered
@@ -52,7 +53,7 @@ function frameSourceRect(video, frame) {
   return { sx, sy, sw, sh }
 }
 
-export default function CapturePanel({ disabled, onImage, preview }) {
+export default function CapturePanel({ disabled, onImage, preview, extracting }) {
   const videoRef = useRef(null)
   const frameRef = useRef(null)
   const streamRef = useRef(null)
@@ -65,6 +66,11 @@ export default function CapturePanel({ disabled, onImage, preview }) {
   const [error, setError] = useState('')
   const scanTimerRef = useRef(null)
   const shotObjectRef = useRef(null)
+
+  /* The ripples run from the shutter through the whole OCR pass, so the stage
+     keeps them until the parent says extraction is done. */
+  const scanningActive = scanning || Boolean(extracting)
+  const scanImage = shotUrl || preview
 
   useEffect(() => {
     return () => {
@@ -272,9 +278,9 @@ export default function CapturePanel({ disabled, onImage, preview }) {
       </div>
 
       <div className="capture-stage">
-        {scanning && shotUrl ? (
+        {scanningActive && scanImage ? (
           <>
-            <img src={shotUrl} alt="The ticket frame you just captured" />
+            <img src={scanImage} alt="The ticket frame you just captured" />
             <div className="ticket-guide__ripples" aria-hidden="true">
               {SCAN_RIPPLES.map((ripple) => (
                 <span
@@ -373,6 +379,13 @@ export default function CapturePanel({ disabled, onImage, preview }) {
           legible.
         </span>
       </button>
+
+      {extracting ? (
+        <p className="capture-note" role="status">
+          <span className="capture-note__dot" aria-hidden="true" />
+          Scanning…
+        </p>
+      ) : null}
 
       {error ? (
         <div className="status status--error" role="alert">

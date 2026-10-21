@@ -59,45 +59,6 @@ function progressLabel(message) {
   return 'Preparing the image'
 }
 
-function TicketSkeleton({ label }) {
-  return (
-    <div className="ticket-skeleton" role="status" aria-live="polite">
-      <div className="ticket-skeleton__header">
-        <div className="skeleton-bar skeleton-bar--title" />
-        <div className="skeleton-bar skeleton-bar--subtitle" />
-      </div>
-      <div className="ticket-skeleton__combos">
-        <div className="ticket-skeleton__row">
-          <div className="skeleton-ball skeleton-ball--chip" />
-          <div className="ticket-skeleton__balls">
-            <div className="skeleton-ball" />
-            <div className="skeleton-ball" />
-            <div className="skeleton-ball" />
-            <div className="skeleton-ball" />
-            <div className="skeleton-ball" />
-            <div className="skeleton-ball" />
-          </div>
-        </div>
-        <div className="ticket-skeleton__row">
-          <div className="skeleton-ball skeleton-ball--chip" />
-          <div className="ticket-skeleton__balls">
-            <div className="skeleton-ball" />
-            <div className="skeleton-ball" />
-            <div className="skeleton-ball" />
-            <div className="skeleton-ball" />
-            <div className="skeleton-ball" />
-            <div className="skeleton-ball" />
-          </div>
-        </div>
-      </div>
-      <div className="ticket-skeleton__status">
-        <span className="skeleton-dot" aria-hidden="true" />
-        <span>{label || 'Reading ticket…'}</span>
-      </div>
-    </div>
-  )
-}
-
 function useIsSmallScreen() {
   const [isSmall, setIsSmall] = useState(() =>
     typeof window !== 'undefined' ? window.matchMedia('(max-width: 900px)').matches : false,
@@ -332,13 +293,10 @@ export default function ScanPage() {
         <div className="stack">
           <CapturePanel
             disabled={ocr.state === 'reading'}
+            extracting={ocr.state === 'reading'}
             onImage={handleImage}
             preview={photo?.url}
           />
-
-          {ocr.state === 'reading' ? (
-            <TicketSkeleton label={ocr.label} />
-          ) : null}
 
           {ocr.state === 'error' ? (
             <div className="status status--error" role="alert">
@@ -494,13 +452,10 @@ export default function ScanPage() {
           <div className="stack">
             <CapturePanel
               disabled={ocr.state === 'reading'}
+              extracting={ocr.state === 'reading'}
               onImage={handleImage}
               preview={photo?.url}
             />
-
-            {ocr.state === 'reading' ? (
-              <TicketSkeleton label={ocr.label} />
-            ) : null}
 
             {ocr.state === 'error' ? (
               <div className="status status--error" role="alert">
