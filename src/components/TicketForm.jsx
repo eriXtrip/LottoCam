@@ -22,6 +22,17 @@ function formatIsoToDdMonYy(iso) {
   return `${day.padStart(2, '0')}-${mon}-${year.slice(-2)}`
 }
 
+function isFutureDate(iso) {
+  if (!iso) return false
+  const today = new Date()
+  const todayIso = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0'),
+    String(today.getDate()).padStart(2, '0'),
+  ].join('-')
+  return iso > todayIso
+}
+
 function toNumbers(cells) {
   return cells.map((value) => (value === '' || value == null ? null : Number(value)))
 }
@@ -50,6 +61,7 @@ export default function TicketForm({
   missing,
 }) {
   const moveTimers = useRef({})
+  const drawDateIsFuture = isFutureDate(ticket.drawDate)
   function update(patch) {
     onChange({ ...ticket, ...patch })
   }
@@ -185,6 +197,7 @@ export default function TicketForm({
                 value={ticket.drawDate ? formatIsoToDdMonYy(ticket.drawDate) : ''}
                 readOnly
                 disabled={disabled}
+                aria-invalid={drawDateIsFuture ? 'true' : undefined}
               />
               <input
                 className="input date-picker-input"
