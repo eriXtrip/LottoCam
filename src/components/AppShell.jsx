@@ -1,7 +1,28 @@
+import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import InstallApp from './InstallApp.jsx'
 
 export default function AppShell({ children }) {
+  const [copied, setCopied] = useState(false)
+  const email = 'jonerictripulca@gmail.com'
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(email)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = email
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    }
+  }
   return (
     <div className="shell">
       <header className="shell-header">
@@ -38,10 +59,29 @@ export default function AppShell({ children }) {
                 Developed by <strong>Jon Eric D. Tripulca</strong>
               </p>
               <p className="shell-footer__dev">
-                <a href="mailto:jonerictripulca@gmail.com?subject=Freelance%20work%20inquiry%20-%20LottoCam">
-                  Available for freelance/web work
+                Available for freelance/web work
+              </p>
+              <p className="shell-footer__dev">
+                <a href={`mailto:${email}?subject=Freelance%20work%20inquiry%20-%20LottoCam`}>
+                  Open in email app
                 </a>
-                {' '}— <span style={{ userSelect: 'all' }}>jonerictripulca@gmail.com</span>
+                {' • '}
+                <button
+                  type="button"
+                  onClick={copyEmail}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'inherit',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    padding: 0,
+                    font: 'inherit',
+                  }}
+                >
+                  {copied ? 'Copied!' : 'Copy email'}
+                </button>
+                {' '}— <span style={{ userSelect: 'all' }}>{email}</span>
               </p>
             </div>
 
