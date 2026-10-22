@@ -38,10 +38,10 @@ export default function AppShell({ children }) {
                 Developed by <strong>Jon Eric D. Tripulca</strong>
               </p>
               <p className="shell-footer__dev">
-                <a href="mailto:joneric.triulca@gmail.com?subject=Freelance%20work%20inquiry%20-%20LottoCam">
+                <a href="mailto:jonerictripulca@gmail.com?subject=Freelance%20work%20inquiry%20-%20LottoCam">
                   Available for freelance/web work
                 </a>
-                {' '}— <span style={{ userSelect: 'all' }}>joneric.triulca@gmail.com</span>
+                {' '}— <span style={{ userSelect: 'all' }}>jonerictripulca@gmail.com</span>
               </p>
             </div>
 
