@@ -37,6 +37,9 @@ export default function AppShell({ children }) {
               <p className="shell-footer__dev">
                 Developed by <strong>Jon Eric D. Tripulca</strong>
               </p>
+              <p className="shell-footer__dev">
+                <a href="mailto:jonerictripulca@gmail.com">Available for freelance/web work</a>
+              </p>
             </div>
 
             <nav className="shell-footer__nav" aria-label="Footer links">
